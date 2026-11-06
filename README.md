@@ -20,6 +20,7 @@ Nachbau des Unterrichtsprogramms **CPU-Direkt** („Mikroprozessor direkt gesteu
 - **Hilfe:** Hilfetext und Befehlsübersicht des Originals, „Fehler melden“ (öffnet ein neues [GitHub-Issue](https://github.com/tinkeredu/giscpud/issues))
 - **Skins:** Automatisch (folgt Hell/Dunkel des Systems), Hell, Dunkel, Klassisch (Windows-Look) und Terminal
 - Speicher, AC, Protokoll und Einstellungen bleiben im Browser gespeichert
+- **Responsives Layout:** einspaltig auf Smartphones, zweispaltig auf Tablets und dreispaltig auf großen Bildschirmen; Speicher und Protokoll scrollen unabhängig. Touch-Bedienelemente, Menüs, Hilfe und Guide passen sich kleinen Displays und dem Querformat an.
 
 ## Befehle
 

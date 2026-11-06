@@ -14,7 +14,7 @@ const BITS = Array.from({ length: 16 }, (_, i) => 15 - i)
 
 function Nibbles({ render }: { render: (bit: number) => ReactNode }) {
   return (
-    <div className="flex flex-wrap justify-center gap-x-3 gap-y-2">
+    <div className="bit-groups flex flex-wrap justify-center gap-x-3 gap-y-2">
       {[0, 1].map((byte) => (
         <div key={byte} className="flex gap-2">
           {[0, 1].map((nib) => (
@@ -40,7 +40,7 @@ export function InputBits({ value, onToggle }: { value: number; onToggle: (bit: 
   return (
     <Nibbles
       render={(bit) => (
-        <label key={bit} className="flex flex-col items-center text-[10px] text-muted">
+        <label key={bit} className="input-bit flex flex-col items-center justify-center text-[10px] text-muted">
           {bit}
           <input type="checkbox" className="h-5 w-5" aria-label={`Bit ${bit}`} checked={((value >> bit) & 1) === 1} onChange={() => onToggle(bit)} />
         </label>
