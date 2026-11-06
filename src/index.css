@@ -423,3 +423,209 @@ body {
 [data-skin='classic'] .selecting {
   box-shadow: 0 0 0 2px var(--select);
 }
+
+/* ---------- Responsive workspace ---------- */
+
+.app-shell {
+  height: 100vh;
+  height: 100dvh;
+  min-width: 0;
+}
+
+.app-shell > header,
+.app-shell > nav,
+.statusbar {
+  flex-shrink: 0;
+}
+
+.app-main {
+  scrollbar-gutter: stable;
+}
+
+.cpu-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.cpu-commands {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-areas: 'input' 'output' 'memory' 'protocol';
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.workspace-grid > * {
+  min-width: 0;
+}
+
+.input-panel { grid-area: input; }
+.output-panel { grid-area: output; }
+.memory-panel { grid-area: memory; }
+.protocol-panel { grid-area: protocol; }
+
+.memory-panel,
+.protocol-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.memory-viewport {
+  height: clamp(16rem, 50vh, 32rem);
+  height: clamp(16rem, 50dvh, 32rem);
+  min-height: 0;
+}
+
+.protocol-log {
+  min-height: 8rem;
+  height: 12rem;
+}
+
+.input-bit {
+  min-width: 1.5rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+.bit-groups {
+  padding-block: 0.25rem;
+}
+
+.led {
+  flex-shrink: 0;
+}
+
+.statusbar {
+  overflow-wrap: anywhere;
+  padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+}
+
+.menu-pop {
+  max-width: calc(100vw - 1rem);
+  max-height: calc(100vh - 9rem);
+  max-height: calc(100dvh - 9rem);
+  overflow-y: auto;
+}
+
+[role='menubar'] > div:last-child .menu-pop {
+  right: 0;
+  left: auto;
+}
+
+.dialog-content {
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
+
+.guide-card {
+  max-height: calc(100vh - 1rem);
+  max-height: calc(100dvh - 1rem);
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 40rem) {
+  .cpu-layout {
+    grid-template-columns: minmax(0, 16rem) minmax(0, 17rem);
+    gap: 2rem;
+  }
+
+  .cpu-commands {
+    padding-top: 1.5rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .workspace-grid {
+    grid-template-areas: 'input memory' 'output memory' 'protocol memory';
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto auto minmax(14rem, 1fr);
+    flex: 1 0 auto;
+  }
+
+  .memory-viewport {
+    flex: 1;
+    height: 0;
+    min-height: 20rem;
+  }
+
+  .protocol-log {
+    flex: 1;
+    height: 0;
+  }
+}
+
+@media (min-width: 72rem) {
+  .workspace-grid {
+    grid-template-areas: 'input memory output' 'protocol memory .';
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto minmax(14rem, 1fr);
+  }
+}
+
+@media (max-width: 39.999rem) {
+  .app-main {
+    padding: 0.5rem;
+  }
+
+  .cpu-panel.group-box {
+    padding: 0.75rem !important;
+  }
+
+  .cpu-panel .btn {
+    min-width: 0;
+  }
+
+  .app-shell .btn,
+  [role='menubar'] > div > button,
+  .menu-pop > button {
+    min-height: 2.75rem;
+  }
+
+  .cpu-accumulator {
+    padding-top: 1.5rem;
+  }
+
+  .mem-row {
+    min-height: 2.75rem;
+  }
+
+  .dialog-backdrop {
+    padding: 0.5rem;
+  }
+}
+
+@media (pointer: coarse) {
+  .btn,
+  [role='menuitem'],
+  .mem-row {
+    min-height: 2.75rem;
+  }
+
+  .input-bit {
+    min-width: 1.75rem;
+  }
+}
+
+@media (max-width: 47.999rem), (max-height: 36rem) {
+  .guide-card {
+    top: auto !important;
+    right: 0.5rem;
+    bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+    left: auto !important;
+    max-height: 60vh;
+    max-height: 60dvh;
+  }
+
+  .is-guiding .app-main {
+    padding-bottom: 60vh;
+    padding-bottom: 60dvh;
+  }
+}

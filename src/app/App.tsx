@@ -128,6 +128,12 @@ export default function App() {
   const selectingCell = pending?.stage === 'address' && !m.alert
   const enteringData = pending?.stage === 'data'
 
+  useEffect(() => {
+    if (guiding || !pending || window.matchMedia('(min-width: 72rem)').matches) return
+    const target = pending.stage === 'address' ? 'speicher' : 'eingabe'
+    document.querySelector(`[data-guide="${target}"]`)?.scrollIntoView({ block: 'nearest' })
+  }, [pending, guiding])
+
   const opButton = (op: Op, cls: string) => {
     const active = pending?.op === op
     return (
@@ -155,11 +161,11 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className={`app-shell flex flex-col ${guiding ? 'is-guiding' : ''}`}>
       <header className="titlebar flex items-center gap-2 px-2 py-1">
-        <img src="./favicon.ico" alt="" className="h-5 w-5" />
-        <h1 className="flex-1 font-bold">Mikroprozessor direkt gesteuert</h1>
-        <button type="button" className="btn py-0.5!" onClick={startGuide}>
+        <img src="./favicon.ico" alt="" className="h-5 w-5 shrink-0" />
+        <h1 className="min-w-0 flex-1 font-bold">Mikroprozessor direkt gesteuert</h1>
+        <button type="button" className="btn shrink-0 py-0.5!" onClick={startGuide}>
           Guide starten
         </button>
       </header>
@@ -191,15 +197,15 @@ export default function App() {
         ]}
       />
 
-      <main className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-3">
+      <main className="app-main flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-3">
         <section
           className="cpu-panel group-box relative shrink-0 overflow-hidden p-4!"
           style={showImage ? { background: 'var(--panel) url(./cpu.jpg) center / cover no-repeat' } : undefined}
           aria-label="Prozessor"
         >
           <span className="chip-label absolute top-2 right-3">Prozessor</span>
-          <div className="flex flex-wrap items-start gap-x-10 gap-y-4">
-            <div className="flex w-64 flex-col gap-2" data-guide="ac">
+          <div className="cpu-layout">
+            <div className="cpu-accumulator flex min-w-0 flex-col gap-2" data-guide="ac">
               <span className="chip-label self-start text-xs">Akkumulator (AC)</span>
               <AcDisplay value={m.ac} decimal={acDecimal} />
               <div className="grid grid-cols-2 gap-2 px-4">
@@ -218,7 +224,7 @@ export default function App() {
                 {showNeg && <div className="col-span-2 grid px-12">{opButton('NEG', '')}</div>}
               </div>
             </div>
-            <div className="flex gap-4 pt-6" data-guide="befehle">
+            <div className="cpu-commands" data-guide="befehle">
               <div className="flex flex-col gap-2">
                 {opButton('LDA', 'op-transfer')}
                 {opButton('STA', 'op-transfer')}
@@ -244,58 +250,58 @@ export default function App() {
           </div>
         </section>
 
-        <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(320px,1fr)_minmax(280px,1fr)_minmax(320px,1fr)]">
-          <div className="flex min-h-0 flex-col gap-3">
-            <GroupBox title="Eingabe" guide="eingabe" className={enteringData ? 'selecting' : ''}>
-              <div className="flex flex-col gap-2">
-                <InputBits value={m.input} onToggle={(bit) => dispatch({ type: 'toggleBit', bit })} />
-                <button type="button" className="btn self-end" disabled={!enteringData} onClick={() => dispatch({ type: 'commit' })}>
-                  übernehmen
-                </button>
-              </div>
-            </GroupBox>
-            <GroupBox title="Protokoll" guide="protokoll" className="flex min-h-56 flex-1 flex-col">
-              <pre className="sunken min-h-32 flex-1 overflow-auto p-1 font-mono text-xs" aria-label="Protokoll" ref={(el) => {
-                el?.scrollTo(0, el.scrollHeight)
-              }}>
-                {m.protocol.join('\n')}
-              </pre>
-              <div className="mt-2 flex flex-wrap items-center gap-1">
-                <button type="button" className="btn px-2!" aria-pressed={m.recording} disabled={m.recording} onClick={() => dispatch({ type: 'record', on: true })}>
-                  Protokoll starten
-                </button>
-                <button type="button" className="btn px-2!" aria-pressed={!m.recording} disabled={!m.recording} onClick={() => dispatch({ type: 'record', on: false })}>
-                  Protokoll beenden
-                </button>
-                <label className="flex items-center gap-1 px-1">
-                  <input type="checkbox" checked={m.withComment} onChange={(e) => dispatch({ type: 'comment', on: e.target.checked })} />
-                  mit Kommentar
-                </label>
-                <span className="flex-1" />
-                <button type="button" className="btn px-2!" disabled={m.protocol.length === 0} onClick={saveProtocol} title="Protokoll als Textdatei speichern">
-                  speichern
-                </button>
-                <button type="button" className="btn px-2!" disabled={m.protocol.length === 0} onClick={() => dispatch({ type: 'clearProtocol' })}>
-                  löschen
-                </button>
-              </div>
-            </GroupBox>
-          </div>
-          <GroupBox title={selectingCell ? 'Speicher – Zelle anklicken' : 'Speicher'} guide="speicher" className={`flex min-h-0 flex-col ${selectingCell ? 'selecting' : ''}`}>
-            <div className="h-[50vh] min-h-64 lg:h-auto lg:min-h-0 lg:flex-1">
+        <div className="workspace-grid">
+          <GroupBox title="Eingabe" guide="eingabe" className={`input-panel ${enteringData ? 'selecting' : ''}`}>
+            <div className="flex flex-col gap-2">
+              <InputBits value={m.input} onToggle={(bit) => dispatch({ type: 'toggleBit', bit })} />
+              <button type="button" className="btn self-end" disabled={!enteringData} onClick={() => dispatch({ type: 'commit' })}>
+                übernehmen
+              </button>
+            </div>
+          </GroupBox>
+          <GroupBox title="Ausgabe" guide="ausgabe" className="output-panel">
+            <OutputLeds value={m.output} />
+          </GroupBox>
+          <GroupBox title={selectingCell ? 'Speicher – Zelle anklicken' : 'Speicher'} guide="speicher" className={`memory-panel ${selectingCell ? 'selecting' : ''}`}>
+            <div className="memory-viewport">
               <MemoryList memory={m.mem} selectable={selectingCell} last={m.last} onSelect={(addr) => dispatch({ type: 'cell', addr })} />
             </div>
           </GroupBox>
-          <div>
-            <GroupBox title="Ausgabe" guide="ausgabe">
-              <OutputLeds value={m.output} />
-            </GroupBox>
-          </div>
+          <GroupBox title="Protokoll" guide="protokoll" className="protocol-panel">
+            <pre
+              className="protocol-log sunken overflow-auto p-1 font-mono text-xs"
+              aria-label="Protokoll"
+              ref={(el) => {
+                el?.scrollTo(0, el.scrollHeight)
+              }}
+            >
+              {m.protocol.join('\n')}
+            </pre>
+            <div className="mt-2 flex flex-wrap items-center gap-1">
+              <button type="button" className="btn px-2!" aria-pressed={m.recording} disabled={m.recording} onClick={() => dispatch({ type: 'record', on: true })}>
+                Protokoll starten
+              </button>
+              <button type="button" className="btn px-2!" aria-pressed={!m.recording} disabled={!m.recording} onClick={() => dispatch({ type: 'record', on: false })}>
+                Protokoll beenden
+              </button>
+              <label className="flex items-center gap-1 px-1">
+                <input type="checkbox" checked={m.withComment} onChange={(e) => dispatch({ type: 'comment', on: e.target.checked })} />
+                mit Kommentar
+              </label>
+              <span className="flex-1" />
+              <button type="button" className="btn px-2!" disabled={m.protocol.length === 0} onClick={saveProtocol} title="Protokoll als Textdatei speichern">
+                speichern
+              </button>
+              <button type="button" className="btn px-2!" disabled={m.protocol.length === 0} onClick={() => dispatch({ type: 'clearProtocol' })}>
+                löschen
+              </button>
+            </div>
+          </GroupBox>
         </div>
       </main>
 
-      <footer className="menubar flex min-h-9 items-center gap-2 border-t border-line px-3 py-1" role="status">
-        <span className={`flex-1 ${m.statusIsError ? 'font-bold text-err' : ''}`}>{m.status}</span>
+      <footer className="statusbar menubar flex min-h-9 flex-wrap items-center gap-2 border-t border-line px-3 py-1" role="status">
+        <span className={`min-w-0 flex-[1_1_14rem] ${m.statusIsError ? 'font-bold text-err' : ''}`}>{m.status}</span>
         {pending && (
           <button type="button" className="btn py-0.5!" onClick={() => dispatch({ type: 'cancel' })}>
             Abbrechen (Esc)

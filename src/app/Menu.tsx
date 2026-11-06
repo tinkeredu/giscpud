@@ -15,6 +15,11 @@ export function MenuBar({ menus }: { menus: { label: string; items: MenuItem[] }
     document.addEventListener('mousedown', close)
     return () => document.removeEventListener('mousedown', close)
   }, [])
+  useEffect(() => {
+    const close = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(null)
+    document.addEventListener('keydown', close)
+    return () => document.removeEventListener('keydown', close)
+  }, [])
   return (
     <nav ref={ref} data-guide="menu" className="menubar relative flex select-none" role="menubar">
       {menus.map((m, i) => (
